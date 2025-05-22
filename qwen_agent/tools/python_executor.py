@@ -158,9 +158,13 @@ class PythonExecutor(BaseTool):
 
     @staticmethod
     def truncate(s, max_length=256):
-        half = max_length // 2
+        """Truncate ``s`` so that the returned string length never exceeds ``max_length``."""
         if len(s) > max_length:
-            s = s[:half] + '...' + s[-half:]
+            if max_length <= 3:
+                return s[:max_length]
+            head_len = (max_length - 3) // 2
+            tail_len = max_length - 3 - head_len
+            s = s[:head_len] + '...' + s[-tail_len:] if tail_len > 0 else s[:head_len] + '...'
         return s
 
     def batch_apply(self, batch_code: List[str]) -> list:
