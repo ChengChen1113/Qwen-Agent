@@ -12,7 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""A file system assistant implemented by assistant"""
+"""A file system assistant demo using MCP servers.
+
+This example shows how to leverage the filesystem MCP server for local file
+operations and the fetch MCP server for downloading online resources. The
+assistant will only have access to files under ``ROOT_RESOURCE``.
+"""
 
 import os
 
@@ -24,12 +29,19 @@ ROOT_RESOURCE = os.path.join(os.path.dirname(__file__), 'resource')
 
 def init_agent_service():
     llm_cfg = {'model': 'qwen-max'}
-    system = '你扮演一个文件系统助手，你具有读取和写入指定目录中文件的能力'
+    system = (
+        '你扮演一个文件系统助手，你具有读取和写入指定目录中文件的能力，'
+        '同时能够抓取互联网上的内容'
+    )
     tools = [{
         'mcpServers': {
             'filesystem': {
                 'command': 'npx',
                 'args': ['-y', '@modelcontextprotocol/server-filesystem', ROOT_RESOURCE]
+            },
+            'fetch': {
+                'command': 'uvx',
+                'args': ['mcp-server-fetch']
             }
         }
     }]
@@ -80,6 +92,7 @@ def app_gui():
         'prompt.suggestions': [
             '列出目录中的文件',
             '读取 doc.pdf 的第一页',
+            '抓取 https://www.example.com 的前 100 个字符',
         ]
     }
     WebUI(
