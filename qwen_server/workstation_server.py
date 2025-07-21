@@ -30,21 +30,13 @@ from qwen_agent.memory import Memory
 from qwen_agent.tools.simple_doc_parser import PARSER_SUPPORTED_FILE_TYPES
 from qwen_agent.utils.utils import get_basename_from_url, get_file_type, has_chinese_chars, save_text_to_file
 from qwen_server import output_beautify
-from qwen_server.schema import GlobalConfig
-from qwen_server.utils import read_meta_data_by_condition, save_browsing_meta_data
+from qwen_server.utils import (get_llm_config, load_config,
+                               read_meta_data_by_condition,
+                               save_browsing_meta_data)
 
 # Read config
-with open(Path(__file__).resolve().parent / 'server_config.json', 'r') as f:
-    server_config = json.load(f)
-    server_config = GlobalConfig(**server_config)
-llm_config = None
-
-if hasattr(server_config.server, 'llm'):
-    llm_config = {
-        'model': server_config.server.llm,
-        'api_key': server_config.server.api_key,
-        'model_server': server_config.server.model_server
-    }
+server_config = load_config()
+llm_config = get_llm_config(server_config)
 
 app_global_para = {
     'time': [str(datetime.date.today()), str(datetime.date.today())],

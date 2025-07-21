@@ -32,13 +32,11 @@ except ImportError:
 from qwen_agent.log import logger
 from qwen_agent.memory import Memory
 from qwen_agent.utils.utils import get_basename_from_url, get_file_type, get_local_ip, hash_sha256, save_text_to_file
-from qwen_server.schema import GlobalConfig
-from qwen_server.utils import rm_browsing_meta_data, save_browsing_meta_data, save_history
+from qwen_server.utils import (load_config, rm_browsing_meta_data,
+                               save_browsing_meta_data, save_history)
 
 # Read config
-with open(Path(__file__).resolve().parent / 'server_config.json', 'r') as f:
-    server_config = json.load(f)
-    server_config = GlobalConfig(**server_config)
+server_config = load_config()
 
 # This APP only requires storage capacity, so using the memory module alone
 mem = Memory()

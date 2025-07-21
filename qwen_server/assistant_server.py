@@ -29,22 +29,11 @@ from qwen_agent.gui import gr
 from qwen_agent.gui.utils import get_avatar_image
 from qwen_agent.llm.base import ModelServiceError
 from qwen_agent.log import logger
-from qwen_server.schema import GlobalConfig
-from qwen_server.utils import read_history, read_meta_data_by_condition, save_history
+from qwen_server.utils import (get_llm_config, load_config, read_history,
+                               read_meta_data_by_condition, save_history)
 
-server_config_path = Path(__file__).resolve().parent / 'server_config.json'
-with open(server_config_path, 'r') as f:
-    server_config = json.load(f)
-    server_config = GlobalConfig(**server_config)
-
-llm_config = None
-
-if hasattr(server_config.server, 'llm'):
-    llm_config = {
-        'model': server_config.server.llm,
-        'api_key': server_config.server.api_key,
-        'model_server': server_config.server.model_server
-    }
+server_config = load_config()
+llm_config = get_llm_config(server_config)
 
 assistant = Assistant(llm=llm_config)
 

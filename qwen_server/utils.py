@@ -15,8 +15,35 @@
 import datetime
 import json
 import os
+from pathlib import Path
 
 from qwen_agent.utils.utils import get_basename_from_url
+from qwen_server.schema import GlobalConfig
+
+
+def load_config(config_path: str | Path | None = None) -> GlobalConfig:
+    """Load ``server_config.json`` and return a :class:`GlobalConfig` instance."""
+    if config_path is None:
+        config_path = Path(__file__).resolve().parent / 'server_config.json'
+    else:
+        config_path = Path(config_path)
+
+    with open(config_path, 'r') as f:
+        cfg = json.load(f)
+        cfg = GlobalConfig(**cfg)
+
+    return cfg
+
+
+def get_llm_config(cfg: GlobalConfig) -> dict | None:
+    """Extract the LLM related configuration from ``cfg`` if available."""
+    if hasattr(cfg.server, 'llm'):
+        return {
+            'model': cfg.server.llm,
+            'api_key': cfg.server.api_key,
+            'model_server': cfg.server.model_server,
+        }
+    return None
 
 
 def save_browsing_meta_data(url: str, title: str, meta_file: str):
